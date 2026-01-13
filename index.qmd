@@ -425,8 +425,8 @@ currentElement = elements.find(e => e.symbol === selectedElement) ||
                  infra_elements.find(e => e.symbol === selectedElement) ||
                  elements[0];
 
-// 선택된 화학식 (mutable)
-mutable selectedFormulaIndex = 0;
+// 선택된 화학식 인덱스
+viewof selectedFormulaIndex = Inputs.input(0);
 
 // 현재 선택된 화학식
 currentFormula = formulas[selectedFormulaIndex] || formulas[0];
@@ -782,7 +782,7 @@ html`<div style="padding: 15px;">
   <div style="display: grid; gap: 10px;">
     ${formulas.map((f, i) => `
       <div
-        onclick="mutable selectedFormulaIndex = ${i};"
+        onclick="viewof selectedFormulaIndex.value = ${i}; viewof selectedFormulaIndex.dispatchEvent(new Event('input'));"
         style="
           padding: 15px;
           background: ${selectedFormulaIndex === i ? '#e8f4f8' : '#f9f9f9'};
