@@ -173,20 +173,140 @@ isotopes = [
     element: "Lg",
     name: "LLM (대형 언어모델)",
     variants: [
-      {symbol: "GPT-Lg", provider: "OpenAI", models: ["GPT-4o", "o1", "o3"], strength: "넓은 생태계, API 안정성"},
-      {symbol: "Cla-Lg", provider: "Anthropic", models: ["Claude Opus 4", "Sonnet 4"], strength: "긴 컨텍스트, 코딩"},
-      {symbol: "Lla-Lg", provider: "Meta/오픈소스", models: ["Llama 4", "Mixtral", "Qwen"], strength: "온프레미스, 커스터마이징"},
-      {symbol: "Gem-Lg", provider: "Google", models: ["Gemini 2.5 Pro", "Flash"], strength: "Google Search 통합, 1M 토큰"}
+      {symbol: "GPT-Lg", provider: "OpenAI", models: ["GPT-5.2", "GPT-4o", "o1", "o3"], strength: "넓은 생태계, API 안정성"},
+      {symbol: "Cla-Lg", provider: "Anthropic", models: ["Claude Opus 4.5", "Sonnet 4.5"], strength: "긴 컨텍스트, 코딩"},
+      {symbol: "Lla-Lg", provider: "Meta", models: ["Llama 4", "Llama 3.3"], strength: "오픈소스, 온프레미스"},
+      {symbol: "Gem-Lg", provider: "Google", models: ["Gemini 3 Pro", "Gemini 2.5"], strength: "멀티모달, 1M 토큰"}
+    ]
+  },
+  {
+    element: "Em",
+    name: "임베딩",
+    variants: [
+      {symbol: "OAI-Em", provider: "OpenAI", models: ["text-embedding-3-large", "text-embedding-3-small"], strength: "RAG 최적화, 다국어"},
+      {symbol: "Coh-Em", provider: "Cohere", models: ["embed-v4"], strength: "MTEB 1위, 장문 지원"},
+      {symbol: "Voy-Em", provider: "Voyage AI", models: ["voyage-3", "voyage-code-3"], strength: "코드 특화, 고성능"},
+      {symbol: "BGE-Em", provider: "BAAI", models: ["BGE-M3"], strength: "오픈소스, 무료"}
+    ]
+  },
+  {
+    element: "Pr",
+    name: "프롬프트",
+    variants: [
+      {symbol: "GPT-Pr", provider: "OpenAI", models: ["ChatGPT", "Playground"], strength: "대중적, 사용 편의성"},
+      {symbol: "Cla-Pr", provider: "Anthropic", models: ["Claude.ai", "Prompt Generator"], strength: "프롬프트 최적화 도구"},
+      {symbol: "PB-Pr", provider: "PromptBuilder", models: ["PromptBuilder"], strength: "100+ 템플릿, 최적화 엔진"},
+      {symbol: "PP-Pr", provider: "PromptPerfect", models: ["PromptPerfect"], strength: "자동 튜닝, 멀티모델"}
     ]
   },
   {
     element: "Vx",
     name: "벡터 DB",
     variants: [
-      {symbol: "Pin-Vx", provider: "Pinecone", models: ["Pinecone"], strength: "완전 관리형 SaaS, 빠른 시작"},
+      {symbol: "Pin-Vx", provider: "Pinecone", models: ["Pinecone"], strength: "완전 관리형 SaaS"},
       {symbol: "Chr-Vx", provider: "Chroma", models: ["Chroma"], strength: "오픈소스, 로컬 개발"},
       {symbol: "Pg-Vx", provider: "pgvector", models: ["PostgreSQL 확장"], strength: "기존 인프라 활용"},
       {symbol: "Qd-Vx", provider: "Qdrant", models: ["Qdrant"], strength: "고성능, 필터링"}
+    ]
+  },
+  {
+    element: "Me",
+    name: "메모리",
+    variants: [
+      {symbol: "MCP-Me", provider: "Anthropic", models: ["MCP Memory"], strength: "컨텍스트 공유, 표준화"},
+      {symbol: "Mem-Me", provider: "Memories.ai", models: ["Project LUCI"], strength: "시각 메모리, CES 2026"},
+      {symbol: "LC-Me", provider: "LangChain", models: ["ConversationBufferMemory"], strength: "대화 히스토리 관리"},
+      {symbol: "Zep-Me", provider: "Zep", models: ["Zep Memory"], strength: "장기 메모리, RAG 통합"}
+    ]
+  },
+  {
+    element: "Fc",
+    name: "함수 호출",
+    variants: [
+      {symbol: "OAI-Fc", provider: "OpenAI", models: ["Function Calling API"], strength: "스키마 검증, 구조화"},
+      {symbol: "Ant-Fc", provider: "Anthropic", models: ["Tool Use", "MCP"], strength: "유연한 도구 체이닝"},
+      {symbol: "Com-Fc", provider: "Composio", models: ["Composio"], strength: "100+ 도구 통합"},
+      {symbol: "Ver-Fc", provider: "Vercel", models: ["AI SDK"], strength: "30+ LLM 표준화"}
+    ]
+  },
+  {
+    element: "Rg",
+    name: "검색 증강 생성 (RAG)",
+    variants: [
+      {symbol: "LI-Rg", provider: "LlamaIndex", models: ["LlamaIndex"], strength: "RAG 특화, 데이터 커넥터"},
+      {symbol: "LC-Rg", provider: "LangChain", models: ["LangChain RAG"], strength: "포괄적 생태계"},
+      {symbol: "Hay-Rg", provider: "Haystack", models: ["Haystack"], strength: "프로덕션 그레이드, 99.9% 가동률"},
+      {symbol: "DSP-Rg", provider: "Stanford", models: ["DSPy"], strength: "프롬프트 최적화"}
+    ]
+  },
+  {
+    element: "Gr",
+    name: "가드레일",
+    variants: [
+      {symbol: "NM-Gr", provider: "NVIDIA", models: ["NeMo Guardrails"], strength: "저지연, GPU 가속"},
+      {symbol: "GA-Gr", provider: "Guardrails AI", models: ["Guardrails AI"], strength: "PII 검출, 독성 필터"},
+      {symbol: "Cis-Gr", provider: "Cisco", models: ["AI Defense"], strength: "엔터프라이즈 보안"},
+      {symbol: "AWS-Gr", provider: "AWS", models: ["Bedrock Guardrails"], strength: "AWS 통합"}
+    ]
+  },
+  {
+    element: "Mm",
+    name: "멀티모달",
+    variants: [
+      {symbol: "Gem-Mm", provider: "Google", models: ["Gemini 3 Pro"], strength: "네이티브 멀티모달"},
+      {symbol: "GPT-Mm", provider: "OpenAI", models: ["GPT-4V", "GPT-5.2"], strength: "이미지+비디오 분석"},
+      {symbol: "Cla-Mm", provider: "Anthropic", models: ["Claude 4"], strength: "컴퓨터 사용, 이미지"},
+      {symbol: "Qw-Mm", provider: "Alibaba", models: ["Qwen-VL"], strength: "오픈소스, 시각+언어"}
+    ]
+  },
+  {
+    element: "Ag",
+    name: "에이전트",
+    variants: [
+      {symbol: "CC-Ag", provider: "Anthropic", models: ["Claude Code"], strength: "코딩 에이전트"},
+      {symbol: "Cur-Ag", provider: "Cursor", models: ["Cursor Composer"], strength: "IDE 통합"},
+      {symbol: "Aid-Ag", provider: "Aider", models: ["Aider"], strength: "Git 워크플로우"},
+      {symbol: "AGP-Ag", provider: "오픈소스", models: ["AutoGPT"], strength: "자율 목표 달성"}
+    ]
+  },
+  {
+    element: "Ev",
+    name: "평가",
+    variants: [
+      {symbol: "LS-Ev", provider: "LangChain", models: ["LangSmith"], strength: "LangChain 통합, 추적"},
+      {symbol: "WB-Ev", provider: "W&B", models: ["Weave"], strength: "MLOps, 실험 추적"},
+      {symbol: "Gal-Ev", provider: "Galileo", models: ["Galileo"], strength: "GenAI 평가 특화"},
+      {symbol: "Ari-Ev", provider: "Arize", models: ["Arize Phoenix"], strength: "모니터링, 관찰성"}
+    ]
+  },
+  {
+    element: "Ft",
+    name: "파인튜닝",
+    variants: [
+      {symbol: "LoR-Ft", provider: "HuggingFace", models: ["LoRA", "PEFT"], strength: "90% 메모리 절감"},
+      {symbol: "QLo-Ft", provider: "QLoRA", models: ["QLoRA", "4-bit"], strength: "초고효율, 4비트"},
+      {symbol: "Uns-Ft", provider: "Unsloth", models: ["Unsloth"], strength: "2배 빠름, 소비자 GPU"},
+      {symbol: "Tog-Ft", provider: "Together AI", models: ["Together Finetune"], strength: "관리형 서비스"}
+    ]
+  },
+  {
+    element: "Ma",
+    name: "멀티 에이전트",
+    variants: [
+      {symbol: "Crew-Ma", provider: "CrewAI", models: ["CrewAI"], strength: "역할 기반 팀워크"},
+      {symbol: "Auto-Ma", provider: "Microsoft", models: ["AutoGen"], strength: "대화형 협업, HIL"},
+      {symbol: "Meta-Ma", provider: "MetaGPT", models: ["MetaGPT"], strength: "소프트웨어 팀 시뮬"},
+      {symbol: "LG-Ma", provider: "LangChain", models: ["LangGraph Multi"], strength: "상태 그래프 오케스트"}
+    ]
+  },
+  {
+    element: "Sm",
+    name: "소형 모델",
+    variants: [
+      {symbol: "Phi-Sm", provider: "Microsoft", models: ["Phi-4", "Phi-3"], strength: "3.8B, 추론 특화"},
+      {symbol: "Gem-Sm", provider: "Google", models: ["Gemma 3", "Gemma 2"], strength: "2B-27B, 모바일 최적화"},
+      {symbol: "Lla-Sm", provider: "Meta", models: ["Llama 3.2 1B/3B"], strength: "온디바이스 AI"},
+      {symbol: "Qw-Sm", provider: "Alibaba", models: ["Qwen 2.5 7B"], strength: "오픈소스, 다국어"}
     ]
   },
   {
