@@ -430,6 +430,10 @@ mutable selectedFormulaIndex = 0;
 
 // 현재 선택된 화학식
 currentFormula = formulas[selectedFormulaIndex] || formulas[0];
+
+// 필터 변수
+viewof filterGroup = Inputs.input("전체");
+viewof filterPeriod = Inputs.input("전체");
 ```
 
 
@@ -598,12 +602,6 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
 
   return container.node();
 }
-```
-
-```{ojs}
-// 필터 입력 (숨김)
-viewof filterGroup = Inputs.input("전체");
-viewof filterPeriod = Inputs.input("전체");
 ```
 
 ## Column {width="70%"}
