@@ -201,37 +201,37 @@ isotopes = [
   }
 ];
 
-// 선택된 원소 (mutable)
+// 선택된 원소를 저장할 mutable 변수
 mutable selectedElement = "Pr";
 
-// 드롭다운
-viewof elementSelector = Inputs.select(
+// 드롭다운 selector
+viewof elementDropdown = Inputs.select(
   elements.map(e => ({label: `${e.symbol} - ${e.name_kr}`, value: e.symbol})),
-  {label: "원소 선택", value: selectedElement}
+  {label: "원소 선택", value: "Pr"}
 );
 
 // 드롭다운 변경 감지
-elementSelectorSync = {
-  mutable selectedElement = elementSelector;
-  return elementSelector;
+elementDropdownSync = {
+  mutable selectedElement = elementDropdown;
+  return elementDropdown;
 };
 
 // 현재 선택된 원소 데이터
 currentElement = elements.find(e => e.symbol === selectedElement) || elements[0];
 
-// 선택된 화학식 (mutable)
+// 선택된 화학식을 저장할 mutable 변수
 mutable selectedFormula = "RAG (검색 증강 생성)";
 
-// 드롭다운
-viewof formulaSelector = Inputs.select(
+// 화학식 드롭다운
+viewof formulaDropdown = Inputs.select(
   formulas.map(f => ({label: f.name, value: f.name})),
-  {label: "화학식 선택", value: selectedFormula}
+  {label: "화학식 선택", value: "RAG (검색 증강 생성)"}
 );
 
 // 드롭다운 변경 감지
-formulaSelectorSync = {
-  mutable selectedFormula = formulaSelector;
-  return formulaSelector;
+formulaDropdownSync = {
+  mutable selectedFormula = formulaDropdown;
+  return formulaDropdown;
 };
 
 // 현재 선택된 화학식 데이터
@@ -251,6 +251,18 @@ html`<div style="padding: 15px; background: #f9f9f9; border-radius: 5px; margin-
     • 동위원소 탭에서 실제 구현체 비교
   </p>
 </div>`
+```
+
+### 원소 선택
+
+```{ojs}
+viewof elementDropdown
+```
+
+### 화학식 선택
+
+```{ojs}
+viewof formulaDropdown
 ```
 
 ### 원소 필터
@@ -596,33 +608,43 @@ html`<div style="padding: 20px; background: #f5f5f5; border-radius: 5px;">
 
 ## Column
 
-### LLM 동위원소
+### 선택된 원소의 동위원소
 
 ```{ojs}
 {
-  const llm_iso = isotopes.find(i => i.element === "Lg");
+  // 선택된 원소의 동위원소 찾기
+  const current_iso = isotopes.find(i => i.element === selectedElement);
 
-  if (!llm_iso) {
+  if (!current_iso) {
     return html`<div style="padding: 20px;">
-      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
+      <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
+        ${currentElement.symbol} - ${currentElement.name_kr}
+      </h3>
+      <p style="color: #999; margin-top: 20px;">
+        이 원소에 대한 동위원소(구현체) 정보가 아직 등록되지 않았습니다.
+      </p>
+      <p style="color: #666; font-size: 13px; margin-top: 10px;">
+        동위원소는 같은 역할을 수행하지만 프로바이더나 특성이 다른 구체적인 구현체를 의미합니다.
+      </p>
     </div>`;
   }
 
   return html`<div style="padding: 20px;">
     <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
-      ${llm_iso.element} - ${llm_iso.name}의 동위원소
+      ${current_iso.element} - ${current_iso.name}의 동위원소
     </h3>
-    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-      같은 역할(대형 언어모델)을 수행하지만, 프로바이더와 특성이 다른 구현체들
+    <p style="color: #666; font-size: 14px; margin: 15px 0 20px 0;">
+      같은 역할을 수행하지만 프로바이더와 특성이 다른 구체적인 구현체들
     </p>
 
-    ${llm_iso.variants.map(v => `
+    ${current_iso.variants.map(v => `
       <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
         <h4 style="margin: 0 0 5px 0; color: #333;">
-          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
+          <sup style="font-size: 12px; color: #666;">${v.provider}</sup>
+          <span style="font-size: 18px; margin-left: 5px;">${v.symbol.split('-')[0]}</span>
         </h4>
-        <p style="margin: 5px 0; font-size: 13px; color: #666;">
-          <strong>모델:</strong> ${v.models.join(', ')}
+        <p style="margin: 8px 0 5px 0; font-size: 13px; color: #666;">
+          <strong>제품/모델:</strong> ${v.models.join(', ')}
         </p>
         <p style="margin: 5px 0; font-size: 13px; color: #666;">
           <strong>강점:</strong> ${v.strength}
@@ -633,72 +655,42 @@ html`<div style="padding: 20px; background: #f5f5f5; border-radius: 5px;">
 }
 ```
 
-### 벡터 DB 동위원소
+### 전체 동위원소 목록
 
 ```{ojs}
-{
-  const vx_iso = isotopes.find(i => i.element === "Vx");
+html`<div style="padding: 20px;">
+  <h3 style="color: #333; font-family: Palatino, Georgia, serif; margin-bottom: 15px;">
+    동위원소가 등록된 원소들
+  </h3>
+  <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
+    아래 원소들을 클릭하면 해당 동위원소를 확인할 수 있습니다.
+  </p>
 
-  if (!vx_iso) {
-    return html`<div style="padding: 20px;">
-      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
-    </div>`;
-  }
-
-  return html`<div style="padding: 20px;">
-    <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
-      ${vx_iso.element} - ${vx_iso.name}의 동위원소
-    </h3>
-
-    ${vx_iso.variants.map(v => `
-      <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
-        <h4 style="margin: 0 0 5px 0; color: #333;">
-          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
-        </h4>
-        <p style="margin: 5px 0; font-size: 13px; color: #666;">
-          <strong>제품:</strong> ${v.models.join(', ')}
-        </p>
-        <p style="margin: 5px 0; font-size: 13px; color: #666;">
-          <strong>강점:</strong> ${v.strength}
-        </p>
-      </div>
-    `).join('')}
-  </div>`;
-}
-```
-
-### 프레임워크 동위원소
-
-```{ojs}
-{
-  const fw_iso = isotopes.find(i => i.element === "Fw");
-
-  if (!fw_iso) {
-    return html`<div style="padding: 20px;">
-      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
-    </div>`;
-  }
-
-  return html`<div style="padding: 20px;">
-    <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
-      ${fw_iso.element} - ${fw_iso.name}의 동위원소
-    </h3>
-
-    ${fw_iso.variants.map(v => `
-      <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
-        <h4 style="margin: 0 0 5px 0; color: #333;">
-          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
-        </h4>
-        <p style="margin: 5px 0; font-size: 13px; color: #666;">
-          <strong>제품:</strong> ${v.models.join(', ')}
-        </p>
-        <p style="margin: 5px 0; font-size: 13px; color: #666;">
-          <strong>강점:</strong> ${v.strength}
-        </p>
-      </div>
-    `).join('')}
-  </div>`;
-}
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    ${isotopes.map(iso => {
+      const elem = elements.find(e => e.symbol === iso.element);
+      return `<button
+        onclick="mutable selectedElement = '${iso.element}';"
+        style="
+          padding: 10px 15px;
+          background: ${selectedElement === iso.element ? '#666' : '#f5f5f5'};
+          color: ${selectedElement === iso.element ? 'white' : '#333'};
+          border: 1px solid #999;
+          border-radius: 5px;
+          cursor: pointer;
+          font-family: Palatino, Georgia, serif;
+          font-size: 14px;
+          transition: all 0.2s;
+        "
+        onmouseover="this.style.background='${selectedElement === iso.element ? '#555' : '#e8e8e8'}'"
+        onmouseout="this.style.background='${selectedElement === iso.element ? '#666' : '#f5f5f5'}'"
+      >
+        <strong>${iso.element}</strong> - ${elem ? elem.name_kr : iso.element}
+        <span style="font-size: 11px; opacity: 0.8;">(${iso.variants.length}개)</span>
+      </button>`;
+    }).join('')}
+  </div>
+</div>`
 ```
 
 # 화학식 {scrolling="true"}
@@ -715,7 +707,7 @@ html`<div style="padding: 20px;">
 
   ${formulas.map(f => `
     <div style="margin: 20px 0; padding: 20px; background: ${selectedFormula === f.name ? '#f0f0f0' : '#f9f9f9'}; border-left: 4px solid #666; border-radius: 5px; cursor: pointer;"
-         onclick="mutable selectedFormula = '${f.name}'">
+         onclick="mutable selectedFormula = '${f.name}';">
       <h4 style="margin: 0 0 10px 0; color: #222; font-family: Palatino, Georgia, serif;">
         ${f.name}
       </h4>
