@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "AI 기술 주기율표"
+  navbar:
+    background: primary
+    left:
+      - text: "대시보드"
+        href: index.html
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: false
