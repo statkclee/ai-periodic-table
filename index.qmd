@@ -548,38 +548,6 @@ html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666
 }
 ```
 
-### 족(Group) 분포
-
-```{ojs}
-{
-  const groupCounts = d3.rollup(elements, v => v.length, d => d.group);
-
-  return Plot.plot({
-    marginLeft: 80,
-    marginBottom: 40,
-    height: 200,
-    x: {label: "원소 수"},
-    y: {label: null},
-    marks: [
-      Plot.barX(Array.from(groupCounts), {
-        x: ([_, count]) => count,
-        y: ([group, _]) => group,
-        fill: "#666",
-        sort: {y: "-x"}
-      }),
-      Plot.text(Array.from(groupCounts), {
-        x: ([_, count]) => count,
-        y: ([group, _]) => group,
-        text: ([_, count]) => count,
-        dx: 15,
-        fill: "#333",
-        fontWeight: "bold"
-      })
-    ]
-  });
-}
-```
-
 # 화학식 {scrolling="true"}
 
 ## Column
