@@ -118,21 +118,21 @@ elements = [
 
 // 인프라 원소
 infra_elements = [
-  {symbol: "Mo", name_kr: "모니터링", name_en: "Monitoring",
+  {symbol: "Mo", name_kr: "모니터링", name_en: "Monitoring", group: "인프라", period: "인프라",
    desc: "시스템 성능, 비용, 품질 추적. 지속적 개선의 기초.",
-   examples: ["LangSmith", "Weights & Biases", "Prometheus"]},
+   examples: ["LangSmith", "Weights & Biases", "Prometheus", "AgentOps"]},
 
-  {symbol: "Sv", name_kr: "서빙", name_en: "Serving",
+  {symbol: "Sv", name_kr: "서빙", name_en: "Serving", group: "인프라", period: "인프라",
    desc: "모델 배포 및 추론 서버. 프로덕션 운영.",
    examples: ["vLLM", "TensorRT-LLM", "SGLang", "TGI"]},
 
-  {symbol: "Qz", name_kr: "양자화", name_en: "Quantization",
+  {symbol: "Qz", name_kr: "양자화", name_en: "Quantization", group: "인프라", period: "인프라",
    desc: "모델 경량화(16bit→4bit). 메모리 절감.",
    examples: ["GPTQ", "AWQ", "GGUF", "bitsandbytes"]},
 
-  {symbol: "Gp", name_kr: "연산 장치", name_en: "Compute/GPU",
+  {symbol: "Gp", name_kr: "연산 장치", name_en: "Compute/GPU", group: "인프라", period: "인프라",
    desc: "하드웨어 인프라. GPU, TPU, NPU.",
-   examples: ["NVIDIA H200", "B200", "AMD MI300X", "Google TPU v5"]}
+   examples: ["NVIDIA B200", "H200", "AMD MI300X", "Google TPU v5"]}
 ];
 
 // 화학식 데이터
@@ -376,8 +376,10 @@ elementDropdownSync = {
   return elementDropdown;
 };
 
-// 현재 선택된 원소 데이터
-currentElement = elements.find(e => e.symbol === selectedElement) || elements[0];
+// 현재 선택된 원소 데이터 (일반 원소와 인프라 원소 모두 검색)
+currentElement = elements.find(e => e.symbol === selectedElement) ||
+                 infra_elements.find(e => e.symbol === selectedElement) ||
+                 elements[0];
 ```
 
 # {.sidebar}
