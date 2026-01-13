@@ -1,6 +1,5 @@
 ---
 title: "AI 기술 주기율표"
-subtitle: "인터랙티브 탐색 도구"
 format:
   dashboard:
     theme: cosmo
@@ -902,7 +901,7 @@ html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666
 
 # 화학식 {scrolling="true"}
 
-## {.sidebar}
+## {.sidebar width=360}
 
 ### 화학식 목록
 
