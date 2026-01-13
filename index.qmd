@@ -318,6 +318,46 @@ isotopes = [
       {symbol: "LG-Fw", provider: "LangGraph", models: ["LangGraph"], strength: "그래프 기반, 조건 분기"},
       {symbol: "SK-Fw", provider: "Semantic Kernel", models: ["Microsoft SK"], strength: "C#/Python, 엔터프라이즈"}
     ]
+  },
+  {
+    element: "Mo",
+    name: "모니터링",
+    variants: [
+      {symbol: "LS-Mo", provider: "LangChain", models: ["LangSmith"], strength: "LLM 추적, 무부하"},
+      {symbol: "WB-Mo", provider: "W&B", models: ["Weave"], strength: "@weave.op 데코레이터"},
+      {symbol: "Prom-Mo", provider: "Prometheus", models: ["Prometheus+Grafana"], strength: "메트릭 수집, 시각화"},
+      {symbol: "AgOp-Mo", provider: "AgentOps", models: ["AgentOps"], strength: "에이전트 특화 관찰"}
+    ]
+  },
+  {
+    element: "Sv",
+    name: "서빙",
+    variants: [
+      {symbol: "vLLM-Sv", provider: "UC Berkeley", models: ["vLLM"], strength: "PagedAttention, 범용"},
+      {symbol: "TRT-Sv", provider: "NVIDIA", models: ["TensorRT-LLM"], strength: "최고 성능, H100"},
+      {symbol: "SGL-Sv", provider: "SGLang", models: ["SGLang"], strength: "RadixAttention, 3배 빠름"},
+      {symbol: "TGI-Sv", provider: "HuggingFace", models: ["TGI"], strength: "장문 처리, 200K 토큰"}
+    ]
+  },
+  {
+    element: "Qz",
+    name: "양자화",
+    variants: [
+      {symbol: "GPTQ-Qz", provider: "GPTQ", models: ["GPTQ"], strength: "GPU 특화, 75% 압축"},
+      {symbol: "AWQ-Qz", provider: "MIT", models: ["AWQ"], strength: "활성화 인식, 고정밀도"},
+      {symbol: "GGUF-Qz", provider: "llama.cpp", models: ["GGUF"], strength: "CPU/Apple M 최적화"},
+      {symbol: "BnB-Qz", provider: "bitsandbytes", models: ["bitsandbytes"], strength: "4/8비트, QLoRA"}
+    ]
+  },
+  {
+    element: "Gp",
+    name: "연산 장치",
+    variants: [
+      {symbol: "B200-Gp", provider: "NVIDIA", models: ["B200 Blackwell"], strength: "H100 대비 4배 성능"},
+      {symbol: "H200-Gp", provider: "NVIDIA", models: ["H200"], strength: "141GB HBM3e, 최고 처리량"},
+      {symbol: "MI3-Gp", provider: "AMD", models: ["MI300X", "MI325X"], strength: "192GB, H200의 74%"},
+      {symbol: "TPU-Gp", provider: "Google", models: ["TPU v5", "v6e"], strength: "Google 생태계"}
+    ]
   }
 ];
 
@@ -548,7 +588,11 @@ html`<div style="font-size: 13px; color: #666; margin-top: 20px;">
     const x = 260 + i * (cellWidth + 10);
     const y = 545;
 
-    const cell = svg.append("g");
+    const cell = svg.append("g")
+      .style("cursor", "pointer")
+      .on("click", () => {
+        mutable selectedElement = e.symbol;
+      });
 
     cell.append("rect")
       .attr("x", x)
@@ -556,10 +600,10 @@ html`<div style="font-size: 13px; color: #666; margin-top: 20px;">
       .attr("width", cellWidth - 40)
       .attr("height", cellHeight - 15)
       .attr("rx", 3)
-      .style("fill", "#f4f4f4")
-      .style("stroke", "#888")
-      .style("stroke-width", 0.5)
-      .style("stroke-dasharray", "2,2");
+      .style("fill", selectedElement === e.symbol ? "#e8e8e8" : "#f4f4f4")
+      .style("stroke", selectedElement === e.symbol ? "#555" : "#888")
+      .style("stroke-width", selectedElement === e.symbol ? 2 : 0.5)
+      .style("stroke-dasharray", selectedElement === e.symbol ? "none" : "2,2");
 
     cell.append("text")
       .attr("x", x + (cellWidth - 40)/2)
