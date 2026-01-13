@@ -551,12 +551,6 @@ html`<div style="padding: 30px; max-width: 900px; margin: 0 auto;">
 
 ## {.sidebar}
 
-### 원소 선택
-
-```{ojs}
-viewof elementDropdown
-```
-
 ### 필터
 
 ```{ojs}
