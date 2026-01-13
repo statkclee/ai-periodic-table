@@ -638,7 +638,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
   const groupsEn = ["Action", "Knowledge", "Structure", "Safety", "Model"];
 
   groups.forEach((g, i) => {
-    const x = 50 + i * (cellWidth + 10);
+    const x = 90 + i * (cellWidth + 10);
     svg.append("text")
       .attr("x", x + cellWidth/2)
       .attr("y", 35)
@@ -667,7 +667,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
   periods.forEach((p, i) => {
     const y = 80 + i * (cellHeight + 10);
     svg.append("text")
-      .attr("x", 30)
+      .attr("x", 70)
       .attr("y", y + cellHeight/2 - 5)
       .attr("text-anchor", "end")
       .style("font-family", "Palatino, Georgia, serif")
@@ -677,7 +677,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
       .text(p);
 
     svg.append("text")
-      .attr("x", 30)
+      .attr("x", 70)
       .attr("y", y + cellHeight/2 + 10)
       .attr("text-anchor", "end")
       .style("font-family", "Palatino, Georgia, serif")
@@ -696,7 +696,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
 
   // 원소 셀 그리기
   filtered.forEach(e => {
-    const x = 50 + (e.col - 1) * (cellWidth + 10);
+    const x = 90 + (e.col - 1) * (cellWidth + 10);
     const y = 80 + (e.row - 1) * (cellHeight + 10);
     const groupColor = groupColors[e.group] || "#999";
 
@@ -752,7 +752,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
 
   // 인프라 섹션
   svg.append("text")
-    .attr("x", 50)
+    .attr("x", 90)
     .attr("y", 545)
     .style("font-family", "Palatino, Georgia, serif")
     .style("font-size", "13px")
@@ -761,16 +761,16 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
     .text("Infrastructure & Ops (기반 기술)");
 
   svg.append("line")
-    .attr("x1", 50)
+    .attr("x1", 90)
     .attr("y1", 550)
-    .attr("x2", 810)
+    .attr("x2", 850)
     .attr("y2", 550)
     .style("stroke", "#ccc")
     .style("stroke-width", 0.5);
 
   // 인프라 원소
   infra_elements.forEach((e, i) => {
-    const x = 160 + i * (cellWidth + 10);
+    const x = 200 + i * (cellWidth + 10);
     const y = 570;
 
     const cell = svg.append("g")
