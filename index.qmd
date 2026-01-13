@@ -1,0 +1,845 @@
+---
+title: "AI 기술 주기율표"
+subtitle: "인터랙티브 탐색 도구"
+format:
+  dashboard:
+    theme: cosmo
+    orientation: columns
+    scrolling: true
+execute:
+  echo: false
+---
+
+```{ojs}
+//| output: false
+
+// AI 원소 데이터 정의
+elements = [
+  // 원자(Atomic) - 실행
+  {symbol: "Pr", name_kr: "프롬프트", name_en: "Prompts", group: "실행", period: "원자", row: 1, col: 1,
+   desc: "AI와 소통하는 자연어 지시. 모든 AI 상호작용의 시작점.",
+   examples: ["ChatGPT 프롬프트", "시스템 프롬프트", "Few-shot 예제"]},
+
+  // 원자(Atomic) - 지식
+  {symbol: "Em", name_kr: "임베딩", name_en: "Embeddings", group: "지식", period: "원자", row: 1, col: 2,
+   desc: "텍스트를 고차원 벡터로 변환. 의미를 수치화하여 검색과 비교 가능하게 함.",
+   examples: ["OpenAI text-embedding-3", "sentence-transformers", "Cohere Embed"]},
+
+  // 원자(Atomic) - 구조
+  {symbol: "Me", name_kr: "메모리", name_en: "Memory", group: "구조", period: "원자", row: 1, col: 3,
+   desc: "대화 맥락과 상태 유지. Agent가 과거 상호작용을 기억하게 함.",
+   examples: ["대화 히스토리", "작업 메모리", "장기 메모리"]},
+
+  // 원자(Atomic) - 안전
+  {symbol: "Ev", name_kr: "평가", name_en: "Evaluations", group: "안전", period: "원자", row: 1, col: 4,
+   desc: "모델 성능 측정 및 벤치마크. 품질 보증의 기초.",
+   examples: ["BLEU", "ROUGE", "HumanEval", "MMLU"]},
+
+  // 원자(Atomic) - 모델
+  {symbol: "Lg", name_kr: "대형 언어모델", name_en: "LLM", group: "모델", period: "원자", row: 1, col: 5,
+   desc: "텍스트 생성 및 이해. AI 시스템의 핵심 추론 엔진.",
+   examples: ["GPT-4o", "Claude Opus 4", "Llama 4", "Gemini 2.5"]},
+
+  // 분자(Molecular) - 실행
+  {symbol: "Fc", name_kr: "함수 호출", name_en: "Function Call", group: "실행", period: "분자", row: 2, col: 1,
+   desc: "LLM이 외부 도구(API, DB, 계산기)를 호출. Agent의 핵심 메커니즘.",
+   examples: ["OpenAI tools", "Anthropic tool_use", "날씨 API", "계산기"]},
+
+  // 분자(Molecular) - 지식
+  {symbol: "Vx", name_kr: "벡터 DB", name_en: "Vector DB", group: "지식", period: "분자", row: 2, col: 2,
+   desc: "고차원 벡터 저장 및 유사도 검색. RAG의 핵심 저장소.",
+   examples: ["Pinecone", "Chroma", "Qdrant", "pgvector"]},
+
+  // 분자(Molecular) - 구조
+  {symbol: "Rg", name_kr: "검색 증강 생성", name_en: "RAG", group: "구조", period: "분자", row: 2, col: 3,
+   desc: "외부 지식 검색 + LLM 생성. 환각 문제 해결.",
+   examples: ["문서 Q&A", "사내 지식 검색", "법률 자문"]},
+
+  // 분자(Molecular) - 안전
+  {symbol: "Gr", name_kr: "가드레일", name_en: "Guardrails", group: "안전", period: "분자", row: 2, col: 4,
+   desc: "유해 콘텐츠 필터링, 프롬프트 인젝션 방어, 출력 검증.",
+   examples: ["NVIDIA NeMo", "Guardrails AI", "LLM Guard"]},
+
+  // 분자(Molecular) - 모델
+  {symbol: "Mm", name_kr: "멀티모달", name_en: "Multimodal", group: "모델", period: "분자", row: 2, col: 5,
+   desc: "텍스트, 이미지, 오디오 통합 처리. 시각+언어 능력.",
+   examples: ["GPT-4 Vision", "Claude Opus 4", "Gemini 2.5 Pro"]},
+
+  // 시스템(System) - 실행
+  {symbol: "Ag", name_kr: "에이전트", name_en: "Agent", group: "실행", period: "시스템", row: 3, col: 1,
+   desc: "자율적 작업 수행. 목표 설정 → 계획 → 실행 → 검증 루프.",
+   examples: ["Claude Code", "Cursor Composer", "Aider", "AutoGPT"]},
+
+  // 시스템(System) - 지식
+  {symbol: "Ft", name_kr: "파인튜닝", name_en: "Fine-tuning", group: "지식", period: "시스템", row: 3, col: 2,
+   desc: "특정 도메인에 맞춰 모델 재학습. 지식 주입.",
+   examples: ["LoRA", "QLoRA", "Full Fine-tune", "DPO"]},
+
+  // 시스템(System) - 구조
+  {symbol: "Fw", name_kr: "프레임워크", name_en: "Framework", group: "구조", period: "시스템", row: 3, col: 3,
+   desc: "AI 구성 요소 통합 및 오케스트레이션. 복잡한 워크플로우 관리.",
+   examples: ["LangChain", "LlamaIndex", "LangGraph", "Semantic Kernel"]},
+
+  // 시스템(System) - 안전
+  {symbol: "Rt", name_kr: "레드팀", name_en: "Red-teaming", group: "안전", period: "시스템", row: 3, col: 4,
+   desc: "적대적 공격으로 취약점 발견. 보안 감사.",
+   examples: ["Jailbreak 테스트", "프롬프트 인젝션", "유해 콘텐츠 생성"]},
+
+  // 시스템(System) - 모델
+  {symbol: "Sm", name_kr: "소형 모델", name_en: "Small Models", group: "모델", period: "시스템", row: 3, col: 5,
+   desc: "경량화 모델(1-10B). 엣지 디바이스, 저비용 배포.",
+   examples: ["Phi-3", "Gemma 7B", "Llama 3.2 3B", "Qwen 2.5 7B"]},
+
+  // 프런티어(Frontier) - 실행
+  {symbol: "Ma", name_kr: "멀티 에이전트", name_en: "Multi-agent", group: "실행", period: "프런티어", row: 4, col: 1,
+   desc: "여러 Agent 협업. 복잡한 작업을 역할 분담하여 해결.",
+   examples: ["AutoGen", "CrewAI", "MetaGPT"]},
+
+  // 프런티어(Frontier) - 지식
+  {symbol: "Sy", name_kr: "합성 데이터", name_en: "Synthetic Data", group: "지식", period: "프런티어", row: 4, col: 2,
+   desc: "AI가 학습 데이터를 생성. 데이터 부족 문제 해결.",
+   examples: ["Self-Instruct", "Evol-Instruct", "WizardLM"]},
+
+  // 프런티어(Frontier) - 구조
+  {symbol: "Op", name_kr: "최적화기", name_en: "Optimizers", group: "구조", period: "프런티어", row: 4, col: 3,
+   desc: "자동 프롬프트 최적화. 메타 학습.",
+   examples: ["DSPy", "Prompt Optimization", "AutoPrompt"]},
+
+  // 프런티어(Frontier) - 안전
+  {symbol: "In", name_kr: "해석가능성", name_en: "Interpretability", group: "안전", period: "프런티어", row: 4, col: 4,
+   desc: "모델 내부 작동 이해. 블랙박스 해체.",
+   examples: ["Attention 시각화", "SHAP", "LIME", "Mechanistic Interpretability"]},
+
+  // 프런티어(Frontier) - 모델
+  {symbol: "Th", name_kr: "추론 모델", name_en: "Reasoning", group: "모델", period: "프런티어", row: 4, col: 5,
+   desc: "단계적 사고(CoT). 복잡한 논리 문제 해결.",
+   examples: ["OpenAI o1", "o3", "DeepSeek-R1"]}
+];
+
+// 인프라 원소
+infra_elements = [
+  {symbol: "Mo", name_kr: "모니터링", name_en: "Monitoring",
+   desc: "시스템 성능, 비용, 품질 추적. 지속적 개선의 기초.",
+   examples: ["LangSmith", "Weights & Biases", "Prometheus"]},
+
+  {symbol: "Sv", name_kr: "서빙", name_en: "Serving",
+   desc: "모델 배포 및 추론 서버. 프로덕션 운영.",
+   examples: ["vLLM", "TensorRT-LLM", "SGLang", "TGI"]},
+
+  {symbol: "Qz", name_kr: "양자화", name_en: "Quantization",
+   desc: "모델 경량화(16bit→4bit). 메모리 절감.",
+   examples: ["GPTQ", "AWQ", "GGUF", "bitsandbytes"]},
+
+  {symbol: "Gp", name_kr: "연산 장치", name_en: "Compute/GPU",
+   desc: "하드웨어 인프라. GPU, TPU, NPU.",
+   examples: ["NVIDIA H200", "B200", "AMD MI300X", "Google TPU v5"]}
+];
+
+// 화학식 데이터
+formulas = [
+  {
+    name: "RAG (검색 증강 생성)",
+    formula: "Pr + Em + Vx + Lg",
+    elements_used: ["Pr", "Em", "Vx", "Lg"],
+    description: "외부 지식을 검색하여 LLM 답변에 통합. 환각 문제 해결.",
+    use_cases: ["기업 지식 Q&A", "문서 검색", "법률/의료 자문"]
+  },
+  {
+    name: "자율 에이전트",
+    formula: "Pr + Me + Fc + Th",
+    elements_used: ["Pr", "Me", "Fc", "Th"],
+    description: "목표 설정 → 계획 → 도구 사용 → 실행. 복잡한 작업 자율 수행.",
+    use_cases: ["Claude Code", "Cursor Composer", "GitHub Copilot Workspace"]
+  },
+  {
+    name: "안전한 RAG",
+    formula: "Pr + Em + Vx + Lg + Gr",
+    elements_used: ["Pr", "Em", "Vx", "Lg", "Gr"],
+    description: "RAG + 가드레일. 프로덕션 환경용 안전 강화.",
+    use_cases: ["금융 챗봇", "의료 상담", "규제 산업 Q&A"]
+  },
+  {
+    name: "코딩 어시스턴트",
+    formula: "Pr + Me + Fc + Lg + Ev",
+    elements_used: ["Pr", "Me", "Fc", "Lg", "Ev"],
+    description: "코드 작성 + 파일 접근 + 테스트 실행. 개발 도구.",
+    use_cases: ["GitHub Copilot", "Cursor", "Claude Code", "Aider"]
+  }
+];
+
+// 동위원소 데이터
+isotopes = [
+  {
+    element: "Lg",
+    name: "LLM (대형 언어모델)",
+    variants: [
+      {symbol: "GPT-Lg", provider: "OpenAI", models: ["GPT-4o", "o1", "o3"], strength: "넓은 생태계, API 안정성"},
+      {symbol: "Cla-Lg", provider: "Anthropic", models: ["Claude Opus 4", "Sonnet 4"], strength: "긴 컨텍스트, 코딩"},
+      {symbol: "Lla-Lg", provider: "Meta/오픈소스", models: ["Llama 4", "Mixtral", "Qwen"], strength: "온프레미스, 커스터마이징"},
+      {symbol: "Gem-Lg", provider: "Google", models: ["Gemini 2.5 Pro", "Flash"], strength: "Google Search 통합, 1M 토큰"}
+    ]
+  },
+  {
+    element: "Vx",
+    name: "벡터 DB",
+    variants: [
+      {symbol: "Pin-Vx", provider: "Pinecone", models: ["Pinecone"], strength: "완전 관리형 SaaS, 빠른 시작"},
+      {symbol: "Chr-Vx", provider: "Chroma", models: ["Chroma"], strength: "오픈소스, 로컬 개발"},
+      {symbol: "Pg-Vx", provider: "pgvector", models: ["PostgreSQL 확장"], strength: "기존 인프라 활용"},
+      {symbol: "Qd-Vx", provider: "Qdrant", models: ["Qdrant"], strength: "고성능, 필터링"}
+    ]
+  },
+  {
+    element: "Fw",
+    name: "프레임워크",
+    variants: [
+      {symbol: "LC-Fw", provider: "LangChain", models: ["LangChain"], strength: "가장 인기, 100+ 도구"},
+      {symbol: "LI-Fw", provider: "LlamaIndex", models: ["LlamaIndex"], strength: "RAG 특화, 데이터 커넥터"},
+      {symbol: "LG-Fw", provider: "LangGraph", models: ["LangGraph"], strength: "그래프 기반, 조건 분기"},
+      {symbol: "SK-Fw", provider: "Semantic Kernel", models: ["Microsoft SK"], strength: "C#/Python, 엔터프라이즈"}
+    ]
+  }
+];
+
+// 선택된 원소 (mutable)
+mutable selectedElement = "Pr";
+
+// 드롭다운
+viewof elementSelector = Inputs.select(
+  elements.map(e => ({label: `${e.symbol} - ${e.name_kr}`, value: e.symbol})),
+  {label: "원소 선택", value: selectedElement}
+);
+
+// 드롭다운 변경 감지
+elementSelectorSync = {
+  mutable selectedElement = elementSelector;
+  return elementSelector;
+};
+
+// 현재 선택된 원소 데이터
+currentElement = elements.find(e => e.symbol === selectedElement) || elements[0];
+
+// 선택된 화학식 (mutable)
+mutable selectedFormula = "RAG (검색 증강 생성)";
+
+// 드롭다운
+viewof formulaSelector = Inputs.select(
+  formulas.map(f => ({label: f.name, value: f.name})),
+  {label: "화학식 선택", value: selectedFormula}
+);
+
+// 드롭다운 변경 감지
+formulaSelectorSync = {
+  mutable selectedFormula = formulaSelector;
+  return formulaSelector;
+};
+
+// 현재 선택된 화학식 데이터
+currentFormula = formulas.find(f => f.name === selectedFormula) || formulas[0];
+```
+
+# {.sidebar}
+
+## AI 주기율표 탐색
+
+```{ojs}
+html`<div style="padding: 15px; background: #f9f9f9; border-radius: 5px; margin-bottom: 20px;">
+  <h3 style="margin-top: 0; color: #333;">사용법</h3>
+  <p style="font-size: 13px; color: #666;">
+    • 원소를 클릭하여 상세 정보 확인<br>
+    • 화학식을 선택하여 AI 아키텍처 패턴 학습<br>
+    • 동위원소 탭에서 실제 구현체 비교
+  </p>
+</div>`
+```
+
+### 원소 필터
+
+```{ojs}
+viewof filterGroup = Inputs.radio(
+  ["전체", "실행", "지식", "구조", "안전", "모델"],
+  {label: "족(Group)", value: "전체"}
+)
+```
+
+```{ojs}
+viewof filterPeriod = Inputs.radio(
+  ["전체", "원자", "분자", "시스템", "프런티어"],
+  {label: "주기(Period)", value: "전체"}
+)
+```
+
+### 통계
+
+```{ojs}
+html`<div style="font-size: 13px; color: #666; margin-top: 20px;">
+  <strong>총 원소:</strong> ${elements.length}개<br>
+  <strong>인프라:</strong> ${infra_elements.length}개<br>
+  <strong>화학식:</strong> ${formulas.length}개
+</div>`
+```
+
+# 주기율표 {scrolling="false"}
+
+## Column {width="70%"}
+
+### 주기율표 {height="60%"}
+
+```{ojs}
+{
+  const width = 900;
+  const height = 550;
+  const cellWidth = 150;
+  const cellHeight = 100;
+
+  const svg = d3.create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", [0, 0, width, height])
+    .style("background", "#fff");
+
+  // 컬럼 헤더 (Groups)
+  const groups = ["실행", "지식", "구조", "안전", "모델"];
+  const groupsEn = ["Action", "Knowledge", "Structure", "Safety", "Model"];
+
+  groups.forEach((g, i) => {
+    const x = 150 + i * (cellWidth + 10);
+    svg.append("text")
+      .attr("x", x + cellWidth/2)
+      .attr("y", 35)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "14px")
+      .style("font-weight", "bold")
+      .style("fill", "#333")
+      .text(g);
+
+    svg.append("text")
+      .attr("x", x + cellWidth/2)
+      .attr("y", 50)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "10px")
+      .style("font-style", "italic")
+      .style("fill", "#777")
+      .text(groupsEn[i]);
+  });
+
+  // 행 헤더 (Periods)
+  const periods = ["원자", "분자", "시스템", "프런티어"];
+  const periodsEn = ["Atomic", "Molecular", "System", "Frontier"];
+
+  periods.forEach((p, i) => {
+    const y = 80 + i * (cellHeight + 10);
+    svg.append("text")
+      .attr("x", 130)
+      .attr("y", y + cellHeight/2 - 5)
+      .attr("text-anchor", "end")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "13px")
+      .style("font-weight", "bold")
+      .style("fill", "#444")
+      .text(p);
+
+    svg.append("text")
+      .attr("x", 130)
+      .attr("y", y + cellHeight/2 + 10)
+      .attr("text-anchor", "end")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "9px")
+      .style("font-style", "italic")
+      .style("fill", "#888")
+      .text(periodsEn[i]);
+  });
+
+  // 필터링된 원소
+  const filtered = elements.filter(e => {
+    const groupMatch = filterGroup === "전체" || e.group === filterGroup;
+    const periodMatch = filterPeriod === "전체" || e.period === filterPeriod;
+    return groupMatch && periodMatch;
+  });
+
+  // 원소 셀 그리기
+  filtered.forEach(e => {
+    const x = 150 + (e.col - 1) * (cellWidth + 10);
+    const y = 80 + (e.row - 1) * (cellHeight + 10);
+
+    const cell = svg.append("g")
+      .style("cursor", "pointer")
+      .on("click", () => {
+        mutable selectedElement = e.symbol;
+      });
+
+    // 배경 (선택 시 강조)
+    cell.append("rect")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("width", cellWidth)
+      .attr("height", cellHeight)
+      .attr("rx", 3)
+      .style("fill", selectedElement === e.symbol ? "#f0f0f0" : "#fdfdfd")
+      .style("stroke", selectedElement === e.symbol ? "#555" : "#999")
+      .style("stroke-width", selectedElement === e.symbol ? 2 : 0.5);
+
+    // 심볼
+    cell.append("text")
+      .attr("x", x + cellWidth/2)
+      .attr("y", y + 40)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "24px")
+      .style("font-weight", "bold")
+      .style("fill", "#111")
+      .text(e.symbol);
+
+    // 한글 이름
+    cell.append("text")
+      .attr("x", x + cellWidth/2)
+      .attr("y", y + 65)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Apple Myungjo, serif")
+      .style("font-size", "13px")
+      .style("fill", "#333")
+      .text(e.name_kr);
+
+    // 영어 이름
+    cell.append("text")
+      .attr("x", x + cellWidth/2)
+      .attr("y", y + 82)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "9px")
+      .style("fill", "#999")
+      .style("text-transform", "uppercase")
+      .text(e.name_en);
+  });
+
+  // 인프라 섹션
+  svg.append("text")
+    .attr("x", 150)
+    .attr("y", 530)
+    .style("font-family", "Palatino, Georgia, serif")
+    .style("font-size", "13px")
+    .style("font-weight", "bold")
+    .style("fill", "#555")
+    .text("Infrastructure & Ops (기반 기술)");
+
+  svg.append("line")
+    .attr("x1", 150)
+    .attr("y1", 535)
+    .attr("x2", 910)
+    .attr("y2", 535)
+    .style("stroke", "#ccc")
+    .style("stroke-width", 0.5);
+
+  // 인프라 원소
+  infra_elements.forEach((e, i) => {
+    const x = 260 + i * (cellWidth + 10);
+    const y = 545;
+
+    const cell = svg.append("g");
+
+    cell.append("rect")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("width", cellWidth - 40)
+      .attr("height", cellHeight - 15)
+      .attr("rx", 3)
+      .style("fill", "#f4f4f4")
+      .style("stroke", "#888")
+      .style("stroke-width", 0.5)
+      .style("stroke-dasharray", "2,2");
+
+    cell.append("text")
+      .attr("x", x + (cellWidth - 40)/2)
+      .attr("y", y + 30)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "18px")
+      .style("font-weight", "bold")
+      .text(e.symbol);
+
+    cell.append("text")
+      .attr("x", x + (cellWidth - 40)/2)
+      .attr("y", y + 52)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Apple Myungjo, serif")
+      .style("font-size", "11px")
+      .style("fill", "#333")
+      .text(e.name_kr);
+
+    cell.append("text")
+      .attr("x", x + (cellWidth - 40)/2)
+      .attr("y", y + 67)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "8px")
+      .style("fill", "#999")
+      .text(e.name_en.toUpperCase());
+  });
+
+  return svg.node();
+}
+```
+
+### 선택된 원소 상세 정보
+
+```{ojs}
+html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666; border-radius: 5px;">
+  <h2 style="margin-top: 0; color: #222; font-family: Palatino, Georgia, serif;">
+    <span style="font-size: 32px; font-weight: bold;">${currentElement.symbol}</span>
+    <span style="font-size: 20px; margin-left: 10px;">${currentElement.name_kr}</span>
+  </h2>
+  <p style="font-size: 14px; color: #999; font-style: italic; margin-top: -10px;">${currentElement.name_en}</p>
+
+  <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 5px;">
+    <p style="font-size: 15px; line-height: 1.6; color: #333; margin: 0;">
+      ${currentElement.desc}
+    </p>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <h4 style="color: #555; font-family: Palatino, Georgia, serif; margin-bottom: 10px;">분류</h4>
+    <span style="display: inline-block; padding: 5px 12px; background: #e8e8e8; border-radius: 3px; margin-right: 10px; font-size: 13px;">
+      <strong>족:</strong> ${currentElement.group}
+    </span>
+    <span style="display: inline-block; padding: 5px 12px; background: #e8e8e8; border-radius: 3px; font-size: 13px;">
+      <strong>주기:</strong> ${currentElement.period}
+    </span>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <h4 style="color: #555; font-family: Palatino, Georgia, serif; margin-bottom: 10px;">주요 예시</h4>
+    <ul style="margin: 0; padding-left: 20px; color: #555;">
+      ${currentElement.examples.map(ex => `<li style="margin: 5px 0;">${ex}</li>`).join('')}
+    </ul>
+  </div>
+</div>`
+```
+
+## Column {width="30%"}
+
+### 화학식 (AI 아키텍처)
+
+```{ojs}
+html`<div style="padding: 20px; background: #f5f5f5; border-radius: 5px;">
+  <h3 style="margin-top: 0; color: #333; font-family: Palatino, Georgia, serif;">
+    ${currentFormula.name}
+  </h3>
+
+  <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+    <code style="font-size: 16px; color: #222; font-family: 'Courier New', monospace; font-weight: bold;">
+      ${currentFormula.formula}
+    </code>
+  </div>
+
+  <p style="font-size: 14px; line-height: 1.6; color: #444;">
+    ${currentFormula.description}
+  </p>
+
+  <h4 style="color: #555; font-size: 14px; margin-top: 20px; margin-bottom: 10px;">사용 원소</h4>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+    ${currentFormula.elements_used.map(sym => {
+      const elem = elements.find(e => e.symbol === sym);
+      return `<span style="
+        display: inline-block;
+        padding: 8px 12px;
+        background: #e8e8e8;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #333;
+      ">${sym} - ${elem ? elem.name_kr : sym}</span>`;
+    }).join('')}
+  </div>
+
+  <h4 style="color: #555; font-size: 14px; margin-top: 20px; margin-bottom: 10px;">활용 사례</h4>
+  <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 13px;">
+    ${currentFormula.use_cases.map(uc => `<li style="margin: 5px 0;">${uc}</li>`).join('')}
+  </ul>
+</div>`
+```
+
+### 족(Group) 분포
+
+```{ojs}
+{
+  const groupCounts = d3.rollup(elements, v => v.length, d => d.group);
+
+  return Plot.plot({
+    marginLeft: 80,
+    marginBottom: 40,
+    height: 200,
+    x: {label: "원소 수"},
+    y: {label: null},
+    marks: [
+      Plot.barX(Array.from(groupCounts), {
+        x: ([_, count]) => count,
+        y: ([group, _]) => group,
+        fill: "#666",
+        sort: {y: "-x"}
+      }),
+      Plot.text(Array.from(groupCounts), {
+        x: ([_, count]) => count,
+        y: ([group, _]) => group,
+        text: ([_, count]) => count,
+        dx: 15,
+        fill: "#333",
+        fontWeight: "bold"
+      })
+    ]
+  });
+}
+```
+
+# 동위원소 {scrolling="true"}
+
+## Column
+
+### LLM 동위원소
+
+```{ojs}
+{
+  const llm_iso = isotopes.find(i => i.element === "Lg");
+
+  if (!llm_iso) {
+    return html`<div style="padding: 20px;">
+      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
+    </div>`;
+  }
+
+  return html`<div style="padding: 20px;">
+    <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
+      ${llm_iso.element} - ${llm_iso.name}의 동위원소
+    </h3>
+    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+      같은 역할(대형 언어모델)을 수행하지만, 프로바이더와 특성이 다른 구현체들
+    </p>
+
+    ${llm_iso.variants.map(v => `
+      <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
+        <h4 style="margin: 0 0 5px 0; color: #333;">
+          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
+        </h4>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>모델:</strong> ${v.models.join(', ')}
+        </p>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>강점:</strong> ${v.strength}
+        </p>
+      </div>
+    `).join('')}
+  </div>`;
+}
+```
+
+### 벡터 DB 동위원소
+
+```{ojs}
+{
+  const vx_iso = isotopes.find(i => i.element === "Vx");
+
+  if (!vx_iso) {
+    return html`<div style="padding: 20px;">
+      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
+    </div>`;
+  }
+
+  return html`<div style="padding: 20px;">
+    <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
+      ${vx_iso.element} - ${vx_iso.name}의 동위원소
+    </h3>
+
+    ${vx_iso.variants.map(v => `
+      <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
+        <h4 style="margin: 0 0 5px 0; color: #333;">
+          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
+        </h4>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>제품:</strong> ${v.models.join(', ')}
+        </p>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>강점:</strong> ${v.strength}
+        </p>
+      </div>
+    `).join('')}
+  </div>`;
+}
+```
+
+### 프레임워크 동위원소
+
+```{ojs}
+{
+  const fw_iso = isotopes.find(i => i.element === "Fw");
+
+  if (!fw_iso) {
+    return html`<div style="padding: 20px;">
+      <p style="color: #999;">동위원소 정보를 찾을 수 없습니다.</p>
+    </div>`;
+  }
+
+  return html`<div style="padding: 20px;">
+    <h3 style="color: #333; font-family: Palatino, Georgia, serif;">
+      ${fw_iso.element} - ${fw_iso.name}의 동위원소
+    </h3>
+
+    ${fw_iso.variants.map(v => `
+      <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #666; border-radius: 3px;">
+        <h4 style="margin: 0 0 5px 0; color: #333;">
+          <sup style="font-size: 12px;">${v.provider}</sup>${v.symbol.split('-')[0]}
+        </h4>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>제품:</strong> ${v.models.join(', ')}
+        </p>
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+          <strong>강점:</strong> ${v.strength}
+        </p>
+      </div>
+    `).join('')}
+  </div>`;
+}
+```
+
+# 화학식 {scrolling="true"}
+
+## Column
+
+### AI 아키텍처 패턴 (4가지)
+
+```{ojs}
+html`<div style="padding: 20px;">
+  <h3 style="color: #333; font-family: Palatino, Georgia, serif; margin-bottom: 20px;">
+    주요 AI 아키텍처 화학식
+  </h3>
+
+  ${formulas.map(f => `
+    <div style="margin: 20px 0; padding: 20px; background: ${selectedFormula === f.name ? '#f0f0f0' : '#f9f9f9'}; border-left: 4px solid #666; border-radius: 5px; cursor: pointer;"
+         onclick="mutable selectedFormula = '${f.name}'">
+      <h4 style="margin: 0 0 10px 0; color: #222; font-family: Palatino, Georgia, serif;">
+        ${f.name}
+      </h4>
+
+      <div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
+        <code style="font-size: 18px; color: #333; font-family: 'Courier New', monospace; font-weight: bold;">
+          ${f.formula}
+        </code>
+      </div>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #444; margin: 15px 0;">
+        ${f.description}
+      </p>
+
+      <div style="margin-top: 15px;">
+        <strong style="color: #555; font-size: 13px;">활용 사례:</strong>
+        <ul style="margin: 5px 0; padding-left: 20px; color: #666; font-size: 13px;">
+          ${f.use_cases.map(uc => `<li style="margin: 3px 0;">${uc}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `).join('')}
+</div>`
+```
+
+### 화학식 시각화
+
+```{ojs}
+{
+  const width = 400;
+  const height = 300;
+
+  const svg = d3.create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .style("background", "#fff");
+
+  // 현재 화학식의 원소들 (필터링하여 undefined 제거)
+  const usedElements = currentFormula.elements_used
+    .map(sym => elements.find(e => e.symbol === sym))
+    .filter(elem => elem !== undefined);
+
+  // 원소가 없는 경우 처리
+  if (usedElements.length === 0) {
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", height / 2)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "14px")
+      .style("fill", "#999")
+      .text("원소 정보를 찾을 수 없습니다.");
+    return svg.node();
+  }
+
+  // 원소들을 원형으로 배치
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = 80;
+
+  usedElements.forEach((elem, i) => {
+    const angle = (i / usedElements.length) * 2 * Math.PI - Math.PI / 2;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+
+    // 연결선
+    svg.append("line")
+      .attr("x1", centerX)
+      .attr("y1", centerY)
+      .attr("x2", x)
+      .attr("y2", y)
+      .style("stroke", "#ccc")
+      .style("stroke-width", 2);
+
+    // 원소 원
+    svg.append("circle")
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", 35)
+      .style("fill", "#f5f5f5")
+      .style("stroke", "#666")
+      .style("stroke-width", 2);
+
+    // 심볼
+    svg.append("text")
+      .attr("x", x)
+      .attr("y", y + 5)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Palatino, Georgia, serif")
+      .style("font-size", "20px")
+      .style("font-weight", "bold")
+      .style("fill", "#222")
+      .text(elem.symbol);
+
+    // 이름
+    svg.append("text")
+      .attr("x", x)
+      .attr("y", y + 55)
+      .attr("text-anchor", "middle")
+      .style("font-family", "Apple Myungjo, serif")
+      .style("font-size", "11px")
+      .style("fill", "#666")
+      .text(elem.name_kr);
+  });
+
+  // 중앙 아이콘
+  svg.append("circle")
+    .attr("cx", centerX)
+    .attr("cy", centerY)
+    .attr("r", 40)
+    .style("fill", "#666")
+    .style("stroke", "#333")
+    .style("stroke-width", 2);
+
+  svg.append("text")
+    .attr("x", centerX)
+    .attr("y", centerY + 6)
+    .attr("text-anchor", "middle")
+    .style("font-family", "Palatino, Georgia, serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .style("fill", "white")
+    .text(currentFormula.name.split(' ')[0]);
+
+  return svg.node();
+}
+```
