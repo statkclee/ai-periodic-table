@@ -387,11 +387,11 @@ html`<div style="font-size: 13px; color: #666; margin-top: 20px;">
 </div>`
 ```
 
-# 주기율표 {scrolling="false"}
+# 주기율표 {scrolling="true"}
 
 ## Column {width="70%"}
 
-### 주기율표 {height="60%"}
+### 주기율표
 
 ```{ojs}
 {
