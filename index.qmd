@@ -432,9 +432,11 @@ mutable selectedFormulaIndex = 0;
 currentFormula = formulas[selectedFormulaIndex] || formulas[0];
 ```
 
-# {.sidebar}
+# 주기율표 {scrolling="true"}
 
-## AI 주기율표 탐색
+## {.sidebar}
+
+### AI 주기율표 탐색
 
 ```{ojs}
 html`<div style="padding: 15px; background: #f9f9f9; border-radius: 5px; margin-bottom: 20px;">
@@ -478,8 +480,6 @@ html`<div style="font-size: 13px; color: #666; margin-top: 20px;">
   <strong>화학식:</strong> ${formulas.length}개
 </div>`
 ```
-
-# 주기율표 {scrolling="true"}
 
 ## Column {width="70%"}
 
@@ -769,7 +769,7 @@ html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666
 
 # 화학식 {scrolling="true"}
 
-## Column {width="35%"}
+## {.sidebar}
 
 ### 화학식 목록
 
@@ -847,7 +847,7 @@ html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666
 }
 ```
 
-## Column {width="65%"}
+## Column
 
 ### 선택된 화학식 상세
 
