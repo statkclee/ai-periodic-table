@@ -141,29 +141,73 @@ formulas = [
     name: "RAG (검색 증강 생성)",
     formula: "Pr + Em + Vx + Lg",
     elements_used: ["Pr", "Em", "Vx", "Lg"],
+    category: "지식",
     description: "외부 지식을 검색하여 LLM 답변에 통합. 환각 문제 해결.",
-    use_cases: ["기업 지식 Q&A", "문서 검색", "법률/의료 자문"]
+    use_cases: ["기업 지식 Q&A", "문서 검색", "법률/의료 자문"],
+    example_impl: "LlamaIndex + OpenAI + Pinecone"
   },
   {
     name: "자율 에이전트",
     formula: "Pr + Me + Fc + Th",
     elements_used: ["Pr", "Me", "Fc", "Th"],
+    category: "실행",
     description: "목표 설정 → 계획 → 도구 사용 → 실행. 복잡한 작업 자율 수행.",
-    use_cases: ["Claude Code", "Cursor Composer", "GitHub Copilot Workspace"]
+    use_cases: ["소프트웨어 개발", "데이터 분석", "자동화 워크플로우"],
+    example_impl: "AutoGPT + OpenAI + LangChain"
   },
   {
-    name: "안전한 RAG",
-    formula: "Pr + Em + Vx + Lg + Gr",
-    elements_used: ["Pr", "Em", "Vx", "Lg", "Gr"],
-    description: "RAG + 가드레일. 프로덕션 환경용 안전 강화.",
-    use_cases: ["금융 챗봇", "의료 상담", "규제 산업 Q&A"]
+    name: "멀티 에이전트 협업",
+    formula: "Ma + Pr + Fc + Lg",
+    elements_used: ["Ma", "Pr", "Fc", "Lg"],
+    category: "실행",
+    description: "여러 에이전트가 역할 분담하여 복잡한 프로젝트 수행.",
+    use_cases: ["소프트웨어 팀 시뮬레이션", "연구 자동화", "컨텐츠 제작"],
+    example_impl: "CrewAI + GPT-4 + Composio"
   },
   {
-    name: "코딩 어시스턴트",
-    formula: "Pr + Me + Fc + Lg + Ev",
-    elements_used: ["Pr", "Me", "Fc", "Lg", "Ev"],
-    description: "코드 작성 + 파일 접근 + 테스트 실행. 개발 도구.",
-    use_cases: ["GitHub Copilot", "Cursor", "Claude Code", "Aider"]
+    name: "안전한 프로덕션 RAG",
+    formula: "Pr + Em + Vx + Lg + Gr + Ev",
+    elements_used: ["Pr", "Em", "Vx", "Lg", "Gr", "Ev"],
+    category: "지식",
+    description: "RAG + 안전장치 + 평가. 엔터프라이즈용 완전체.",
+    use_cases: ["금융 챗봇", "의료 상담", "규제 산업 Q&A"],
+    example_impl: "Haystack + Claude + NeMo Guardrails + LangSmith"
+  },
+  {
+    name: "코딩 에이전트",
+    formula: "Ag + Fc + Me + Lg + Ev",
+    elements_used: ["Ag", "Fc", "Me", "Lg", "Ev"],
+    category: "실행",
+    description: "코드 작성 + 파일 접근 + 테스트 실행. 개발 자동화.",
+    use_cases: ["자동 코드 생성", "버그 수정", "리팩토링"],
+    example_impl: "Claude Code + Anthropic MCP"
+  },
+  {
+    name: "파인튜닝 파이프라인",
+    formula: "Ft + Lg + Ev + Gp",
+    elements_used: ["Ft", "Lg", "Ev", "Gp"],
+    category: "모델",
+    description: "도메인 특화 모델 학습. 데이터 → 학습 → 평가.",
+    use_cases: ["고객 서비스 봇", "법률 문서 분석", "의료 진단 보조"],
+    example_impl: "Unsloth + Llama 3 + W&B + H200"
+  },
+  {
+    name: "멀티모달 앱",
+    formula: "Mm + Pr + Fc + Me",
+    elements_used: ["Mm", "Pr", "Fc", "Me"],
+    category: "모델",
+    description: "이미지+텍스트 통합 처리. 시각적 이해 + 대화.",
+    use_cases: ["이미지 설명", "문서 OCR", "비디오 분석"],
+    example_impl: "GPT-4V + OpenAI API"
+  },
+  {
+    name: "경량 온디바이스 AI",
+    formula: "Sm + Qz + Pr",
+    elements_used: ["Sm", "Qz", "Pr"],
+    category: "모델",
+    description: "소형 모델 + 양자화. 모바일/엣지 디바이스 배포.",
+    use_cases: ["스마트폰 AI", "IoT 디바이스", "오프라인 앱"],
+    example_impl: "Phi-3 + GGUF + Ollama"
   }
 ];
 
@@ -380,6 +424,12 @@ elementDropdownSync = {
 currentElement = elements.find(e => e.symbol === selectedElement) ||
                  infra_elements.find(e => e.symbol === selectedElement) ||
                  elements[0];
+
+// 선택된 화학식 (mutable)
+mutable selectedFormulaIndex = 0;
+
+// 현재 선택된 화학식
+currentFormula = formulas[selectedFormulaIndex] || formulas[0];
 ```
 
 # {.sidebar}
@@ -719,57 +769,125 @@ html`<div style="padding: 25px; background: #f9f9f9; border-left: 4px solid #666
 
 # 화학식 {scrolling="true"}
 
-## Column
+## Column {width="35%"}
 
-### AI 아키텍처 패턴
+### 화학식 목록
 
 ```{ojs}
-html`<div style="padding: 20px;">
-  <h3 style="color: #333; font-family: Palatino, Georgia, serif; margin-bottom: 20px;">
-    주요 AI 아키텍처 화학식
-  </h3>
+html`<div style="padding: 15px;">
+  <h4 style="color: #333; font-family: Palatino, Georgia, serif; margin-bottom: 15px;">
+    AI 아키텍처 패턴 (${formulas.length}개)
+  </h4>
 
-  ${formulas.map(f => `
-    <div style="margin: 20px 0; padding: 20px; background: #f9f9f9; border-left: 4px solid #666; border-radius: 5px;">
-      <h4 style="margin: 0 0 10px 0; color: #222; font-family: Palatino, Georgia, serif;">
-        ${f.name}
-      </h4>
-
-      <div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
-        <code style="font-size: 18px; color: #333; font-family: 'Courier New', monospace; font-weight: bold;">
-          ${f.formula}
-        </code>
-      </div>
-
-      <p style="font-size: 14px; line-height: 1.6; color: #444; margin: 15px 0;">
-        ${f.description}
-      </p>
-
-      <div style="margin-top: 15px;">
-        <strong style="color: #555; font-size: 13px;">사용 원소:</strong>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-          ${f.elements_used.map(sym => {
-            const elem = elements.find(e => e.symbol === sym);
-            return `<span style="
-              display: inline-block;
-              padding: 6px 10px;
-              background: #e8e8e8;
-              border-radius: 4px;
-              font-size: 12px;
-              font-weight: bold;
-              color: #333;
-            ">${sym} - ${elem ? elem.name_kr : sym}</span>`;
-          }).join('')}
+  <div style="display: grid; gap: 10px;">
+    ${formulas.map((f, i) => `
+      <div
+        onclick="mutable selectedFormulaIndex = ${i};"
+        style="
+          padding: 15px;
+          background: ${selectedFormulaIndex === i ? '#e8f4f8' : '#f9f9f9'};
+          border-left: 4px solid ${selectedFormulaIndex === i ? '#0066cc' : '#999'};
+          border-radius: 5px;
+          cursor: pointer;
+          transition: all 0.2s;
+        "
+        onmouseover="this.style.background='${selectedFormulaIndex === i ? '#d8e8f0' : '#f0f0f0'}'"
+        onmouseout="this.style.background='${selectedFormulaIndex === i ? '#e8f4f8' : '#f9f9f9'}'"
+      >
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <strong style="color: #222; font-size: 15px;">${f.name}</strong>
+          <span style="
+            padding: 3px 8px;
+            background: ${selectedFormulaIndex === i ? '#0066cc' : '#ccc'};
+            color: white;
+            border-radius: 3px;
+            font-size: 11px;
+          ">${f.category}</span>
         </div>
-      </div>
 
-      <div style="margin-top: 15px;">
-        <strong style="color: #555; font-size: 13px;">활용 사례:</strong>
-        <ul style="margin: 5px 0; padding-left: 20px; color: #666; font-size: 13px;">
-          ${f.use_cases.map(uc => `<li style="margin: 3px 0;">${uc}</li>`).join('')}
-        </ul>
+        <code style="
+          font-size: 13px;
+          color: #555;
+          font-family: 'Courier New', monospace;
+          background: white;
+          padding: 5px 8px;
+          border-radius: 3px;
+          display: block;
+        ">${f.formula}</code>
+
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666; line-height: 1.4;">
+          ${f.description}
+        </p>
       </div>
+    `).join('')}
+  </div>
+</div>`
+```
+
+## Column {width="65%"}
+
+### 선택된 화학식 상세
+
+```{ojs}
+html`<div style="padding: 25px; background: #f9f9f9; border-radius: 5px;">
+  <h2 style="margin-top: 0; color: #222; font-family: Palatino, Georgia, serif;">
+    ${currentFormula.name}
+  </h2>
+
+  <div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0; border: 2px solid #0066cc;">
+    <code style="font-size: 22px; color: #0066cc; font-family: 'Courier New', monospace; font-weight: bold;">
+      ${currentFormula.formula}
+    </code>
+  </div>
+
+  <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+    <p style="font-size: 15px; line-height: 1.7; color: #333; margin: 0;">
+      ${currentFormula.description}
+    </p>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <h4 style="color: #555; font-family: Palatino, Georgia, serif; margin-bottom: 10px;">
+      구성 원소 (${currentFormula.elements_used.length}개)
+    </h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+      ${currentFormula.elements_used.map(sym => {
+        const elem = elements.find(e => e.symbol === sym) || infra_elements.find(e => e.symbol === sym);
+        return `<button
+          onclick="mutable selectedElement = '${sym}';"
+          style="
+            padding: 10px;
+            background: #e8e8e8;
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: Palatino, Georgia, serif;
+          "
+          onmouseover="this.style.background='#d8d8d8'; this.style.borderColor='#666'"
+          onmouseout="this.style.background='#e8e8e8'; this.style.borderColor='#999'"
+        >
+          <div style="font-size: 20px; font-weight: bold; color: #222;">${sym}</div>
+          <div style="font-size: 12px; color: #666; margin-top: 3px;">${elem ? elem.name_kr : sym}</div>
+        </button>`;
+      }).join('')}
     </div>
-  `).join('')}
+  </div>
+
+  <div style="margin-top: 20px;">
+    <h4 style="color: #555; font-family: Palatino, Georgia, serif; margin-bottom: 10px;">
+      활용 사례
+    </h4>
+    <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 14px;">
+      ${currentFormula.use_cases.map(uc => `<li style="margin: 8px 0; line-height: 1.5;">${uc}</li>`).join('')}
+    </ul>
+  </div>
+
+  <div style="margin-top: 20px; padding: 15px; background: #fff8e6; border-left: 4px solid #ffa500; border-radius: 5px;">
+    <strong style="color: #cc8800; font-size: 13px;">예시 구현:</strong>
+    <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">
+      ${currentFormula.example_impl}
+    </p>
+  </div>
 </div>`
 ```
