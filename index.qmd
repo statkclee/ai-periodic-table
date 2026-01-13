@@ -551,20 +551,173 @@ html`<div style="padding: 30px; max-width: 900px; margin: 0 auto;">
 
 ## {.sidebar}
 
-### 필터
-
 ```{ojs}
-viewof filterGroup = Inputs.radio(
-  ["전체", "실행", "지식", "구조", "안전", "모델"],
-  {label: "족(Group)", value: "전체"}
-)
+html`<div style="padding: 20px 15px; font-family: 'Palatino', 'Georgia', serif;">
+  <div style="margin-bottom: 35px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+    <h3 style="
+      margin: 0 0 5px 0;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #999;
+    ">Filter by</h3>
+  </div>
+</div>`
 ```
 
 ```{ojs}
-viewof filterPeriod = Inputs.radio(
-  ["전체", "원자", "분자", "시스템", "프런티어"],
-  {label: "주기(Period)", value: "전체"}
-)
+html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', serif;">
+  <h4 style="
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: -0.2px;
+  ">족 (Group)</h4>
+</div>`
+```
+
+```{ojs}
+{
+  const container = d3.create("div")
+    .style("padding", "0 15px 30px 15px");
+
+  const groups = [
+    {value: "전체", label: "All"},
+    {value: "실행", label: "Action", color: "#0066cc"},
+    {value: "지식", label: "Knowledge", color: "#28a745"},
+    {value: "구조", label: "Structure", color: "#ffa500"},
+    {value: "안전", label: "Safety", color: "#dc3545"},
+    {value: "모델", label: "Model", color: "#6f42c1"}
+  ];
+
+  groups.forEach(g => {
+    const item = container.append("div")
+      .style("margin-bottom", "8px")
+      .style("cursor", "pointer")
+      .style("display", "flex")
+      .style("align-items", "center")
+      .style("padding", "8px 10px")
+      .style("border-radius", "3px")
+      .style("background", filterGroup === g.value ? "#f5f5f5" : "transparent")
+      .style("transition", "background 0.15s")
+      .on("click", () => {
+        viewof filterGroup.value = g.value;
+        viewof filterGroup.dispatchEvent(new Event("input"));
+      })
+      .on("mouseover", function() {
+        if (filterGroup !== g.value) {
+          d3.select(this).style("background", "#fafafa");
+        }
+      })
+      .on("mouseout", function() {
+        if (filterGroup !== g.value) {
+          d3.select(this).style("background", "transparent");
+        }
+      });
+
+    if (g.color) {
+      item.append("div")
+        .style("width", "3px")
+        .style("height", "16px")
+        .style("background", g.color)
+        .style("margin-right", "10px")
+        .style("border-radius", "1px");
+    }
+
+    item.append("span")
+      .style("font-size", "13px")
+      .style("color", filterGroup === g.value ? "#222" : "#555")
+      .style("font-weight", filterGroup === g.value ? "600" : "400")
+      .text(g.value);
+
+    if (g.label && g.value !== "전체") {
+      item.append("span")
+        .style("font-size", "11px")
+        .style("color", "#999")
+        .style("margin-left", "auto")
+        .style("font-style", "italic")
+        .text(g.label);
+    }
+  });
+
+  return container.node();
+}
+```
+
+```{ojs}
+html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', serif; margin-top: 20px;">
+  <h4 style="
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: -0.2px;
+  ">주기 (Period)</h4>
+</div>`
+```
+
+```{ojs}
+{
+  const container = d3.create("div")
+    .style("padding", "0 15px");
+
+  const periods = [
+    {value: "전체", label: "All"},
+    {value: "원자", label: "Atomic"},
+    {value: "분자", label: "Molecular"},
+    {value: "시스템", label: "System"},
+    {value: "프런티어", label: "Frontier"}
+  ];
+
+  periods.forEach(p => {
+    const item = container.append("div")
+      .style("margin-bottom", "8px")
+      .style("cursor", "pointer")
+      .style("padding", "8px 10px")
+      .style("border-radius", "3px")
+      .style("background", filterPeriod === p.value ? "#f5f5f5" : "transparent")
+      .style("transition", "background 0.15s")
+      .on("click", () => {
+        viewof filterPeriod.value = p.value;
+        viewof filterPeriod.dispatchEvent(new Event("input"));
+      })
+      .on("mouseover", function() {
+        if (filterPeriod !== p.value) {
+          d3.select(this).style("background", "#fafafa");
+        }
+      })
+      .on("mouseout", function() {
+        if (filterPeriod !== p.value) {
+          d3.select(this).style("background", "transparent");
+        }
+      });
+
+    item.append("span")
+      .style("font-size", "13px")
+      .style("color", filterPeriod === p.value ? "#222" : "#555")
+      .style("font-weight", filterPeriod === p.value ? "600" : "400")
+      .text(p.value);
+
+    if (p.label && p.value !== "전체") {
+      item.append("span")
+        .style("font-size", "11px")
+        .style("color", "#999")
+        .style("margin-left", "10px")
+        .style("font-style", "italic")
+        .text(p.label);
+    }
+  });
+
+  return container.node();
+}
+```
+
+```{ojs}
+// 필터 입력 (숨김)
+viewof filterGroup = Inputs.input("전체");
+viewof filterPeriod = Inputs.input("전체");
 ```
 
 ## Column {width="70%"}
