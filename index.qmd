@@ -615,6 +615,15 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
   const cellWidth = 150;
   const cellHeight = 100;
 
+  // 족별 색상 매핑
+  const groupColors = {
+    "실행": "#0066cc",
+    "지식": "#28a745",
+    "구조": "#ffa500",
+    "안전": "#dc3545",
+    "모델": "#6f42c1"
+  };
+
   const svg = d3.create("svg")
     .attr("width", "100%")
     .attr("height", "100%")
@@ -689,6 +698,7 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
   filtered.forEach(e => {
     const x = 150 + (e.col - 1) * (cellWidth + 10);
     const y = 80 + (e.row - 1) * (cellHeight + 10);
+    const groupColor = groupColors[e.group] || "#999";
 
     const cell = svg.append("g")
       .style("cursor", "pointer")
@@ -704,8 +714,8 @@ html`<div style="padding: 0 15px 25px 15px; font-family: 'Palatino', 'Georgia', 
       .attr("height", cellHeight)
       .attr("rx", 3)
       .style("fill", selectedElement === e.symbol ? "#f0f0f0" : "#fdfdfd")
-      .style("stroke", selectedElement === e.symbol ? "#555" : "#999")
-      .style("stroke-width", selectedElement === e.symbol ? 2 : 0.5);
+      .style("stroke", selectedElement === e.symbol ? groupColor : "#ddd")
+      .style("stroke-width", selectedElement === e.symbol ? 3 : 1);
 
     // 심볼
     cell.append("text")
